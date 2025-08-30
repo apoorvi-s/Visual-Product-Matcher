@@ -1,0 +1,57 @@
+{% extends "home.html" %}
+
+{% block body %}
+<section>
+    <h1>Search Products</h1>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+        {% csrf_token %}
+        <input type="file" name="image_file" accept="image/*" id="imageFileInput">
+        <label>Or</label>
+        <input type="url" name="image_url" placeholder="https://example.com/image.jpg" id="imageUrlInput">
+
+        {% if image %}
+            <input type="hidden" name="uploaded_image_url" value="{{ image }}">
+        {% endif %}
+
+        <div class="button-group">
+            <button type="submit" name="action" value="upload" id="uploadBtn">Upload</button>
+            <button type="submit" name="action" value="search" id="searchBtn" {% if not image %}disabled{% endif %}>Search</button>
+        </div>
+    </form>
+
+    {% if image %}
+        <h3>Uploaded Image:</h3>
+        <img src="{{ image }}" alt="Uploaded image" style="max-width: 500px;">
+    {% endif %}
+</section>
+
+<script>
+    const uploadBtn = document.getElementById('uploadBtn');
+    const searchBtn = document.getElementById('searchBtn');
+    const fileInput = document.getElementById('imageFileInput');
+    const urlInput = document.getElementById('imageUrlInput');
+
+    function toggleSearchButton() {
+        const hiddenImageUrlInput = document.querySelector('input[name="uploaded_image_url"]');
+        const hasHiddenUrl = hiddenImageUrlInput && hiddenImageUrlInput.value.trim() !== "";
+
+        if (fileInput.files.length > 0 || urlInput.value.trim() !== '' || hasHiddenUrl) {
+            searchBtn.disabled = false;
+        } else {
+            searchBtn.disabled = true;
+        }
+    }
+
+    fileInput.addEventListener('change', toggleSearchButton);
+    urlInput.addEventListener('input', toggleSearchButton);
+
+    toggleSearchButton();
+</script>
+
+
+{% endblock body %}
