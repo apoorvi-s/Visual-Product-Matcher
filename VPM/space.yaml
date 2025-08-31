@@ -1,0 +1,4 @@
+# space.yaml
+title: "Visual Product Matcher"
+sdk: docker
+python_version: 3.11

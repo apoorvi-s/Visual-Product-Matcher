@@ -1,8 +1,20 @@
 from django.db import models
 
 # Create your models here.
-from django.db import models
 
+
+#For the feedback from users
+class Feedback(models.Model): 
+  name = models.CharField(max_length=100)
+  email = models.EmailField(max_length=150)
+  desc = models.TextField()
+
+
+  def __str__(self):
+    return self.email
+
+
+#For our products
 class Product(models.Model):
     image = models.ImageField(upload_to='sample_images/')
     product_id = models.CharField(max_length=50)

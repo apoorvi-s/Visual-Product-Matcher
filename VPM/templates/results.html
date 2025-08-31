@@ -1,0 +1,118 @@
+{% extends "home.html" %}
+
+{% block body %}
+<div class="results-section mx-auto">
+  <div class="results-layout">
+    
+    <!-- Query Image + Filters -->
+    <div>
+      <h5 class="mb-3 text-secondary">Query Image:</h5>
+      <img src="{{ query_image }}" alt="Query Image" class="img-fluid rounded border mb-3"
+           style="max-height: 300px; object-fit: cover;">
+
+      <div class="filters-card">
+        <h4>Filters</h4>
+        <div class="mb-3">
+          <label for="genderFilter" class="form-label">Gender</label>
+          <select id="genderFilter" class="form-select">
+            <option value="all">All</option>
+            {% for g in genders %}
+              <option value="{{ g }}">{{ g }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="colourFilter" class="form-label">Colour</label>
+          <select id="colourFilter" class="form-select">
+            <option value="all">All</option>
+            {% for c in colours %}
+              <option value="{{ c }}">{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="sortOptions" class="form-label">Sort by Similarity</label>
+          <select id="sortOptions" class="form-select">
+            <option value="high">High → Low</option>
+            <option value="low">Low → High</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div>
+      <h3 class="mb-3 text-secondary">Top Matches:</h3>
+      {% if results %}
+        <div id="resultsContainer" class="results-grid">
+          {% for score, product in results %}
+            <div class="product-card"
+                 data-gender="{{ product.gender }}"
+                 data-colour="{{ product.base_colour }}"
+                 data-similarity="{{ score }}">
+              <img src="{{ product.image_url }}" alt="{{ product.name }}">
+              <p><strong>{{ product.name|default:"Unnamed" }}</strong></p>
+              <p>Category: {{ product.category }}</p>
+              <p>Gender: {{ product.gender }}</p>
+              <p>Colour: {{ product.base_colour }}</p>
+              <p class="text-muted">Similarity: {{ score|floatformat:2 }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="no-results">No products match your query.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="text-center mt-4">
+    <a href="{% url 'Upload' %}" class="btn btn-outline-primary">&larr; Search Again</a>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const genderFilter = document.getElementById("genderFilter");
+    const colourFilter = document.getElementById("colourFilter");
+    const sortOptions = document.getElementById("sortOptions");
+    const resultsContainer = document.getElementById("resultsContainer");
+
+    function applyFiltersAndSort() {
+        const gender = genderFilter.value.toLowerCase();
+        const colour = colourFilter.value.toLowerCase();
+        const sort = sortOptions.value;
+
+        // Get all cards
+        const cards = Array.from(resultsContainer.querySelectorAll(".product-card"));
+
+        // Filter
+        cards.forEach(card => {
+            const cardGender = card.dataset.gender.toLowerCase();
+            const cardColour = card.dataset.colour.toLowerCase();
+            const genderMatch = (gender === "all" || cardGender === gender);
+            const colourMatch = (colour === "all" || cardColour === colour);
+            card.style.display = (genderMatch && colourMatch) ? "block" : "none";
+        });
+
+        // Sort visible cards
+        const visibleCards = cards.filter(c => c.style.display !== "none");
+        visibleCards.sort((a, b) => {
+            if (sort === "high") {
+                return parseFloat(b.dataset.similarity) - parseFloat(a.dataset.similarity);
+            } else {
+                return parseFloat(a.dataset.similarity) - parseFloat(b.dataset.similarity);
+            }
+        });
+
+        visibleCards.forEach(card => resultsContainer.appendChild(card));
+    }
+
+    genderFilter.addEventListener("change", applyFiltersAndSort);
+    colourFilter.addEventListener("change", applyFiltersAndSort);
+    sortOptions.addEventListener("change", applyFiltersAndSort);
+});
+</script>
+
+{% endblock body %}

@@ -2,7 +2,7 @@
 
 {% block body %}
 <section>
-    <h1>Search Products</h1>
+    <h1>Browse Products</h1>
 
     {% if error %}
         <p class="error">{{ error }}</p>
@@ -25,13 +25,12 @@
     </form>
 
     {% if image %}
-        <h3>Uploaded Image:</h3>
+        <h3>Preview:</h3>
         <img src="{{ image }}" alt="Uploaded image" style="max-width: 500px;">
     {% endif %}
 </section>
 
 <script>
-    const uploadBtn = document.getElementById('uploadBtn');
     const searchBtn = document.getElementById('searchBtn');
     const fileInput = document.getElementById('imageFileInput');
     const urlInput = document.getElementById('imageUrlInput');
@@ -52,6 +51,4 @@
 
     toggleSearchButton();
 </script>
-
-
 {% endblock body %}
