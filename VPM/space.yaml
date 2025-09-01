@@ -1,4 +1,8 @@
 # space.yaml
-title: "Visual Product Matcher"
+title: Visual Product Matcher
+emoji: 🛍️
+colorFrom: pink
+colorTo: indigo
 sdk: docker
-python_version: 3.11
+pinned: false
+license: mit
